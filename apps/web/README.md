@@ -1,73 +1,41 @@
-# React + TypeScript + Vite
+# apps/web
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Li-Mg Alloy Diffusion Simulator の Web アプリ本体。
 
-Currently, two official plugins are available:
+この package は Vite Plus (`vp`) で起動・ビルドする React TypeScript アプリである。
+root package は pnpm workspace と横断テストを統括し、実際の画面アプリはこの `apps/web` に置く。
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Commands
 
-## React Compiler
+root から実行する通常コマンド:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(["dist"]),
-  {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
+```bash
+pnpm dev
+pnpm --filter web build
+pnpm --filter web dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+`pnpm dev` は root script から `pnpm --filter web dev` を呼び、最終的に `vp dev` を実行する。
 
-```js
-// eslint.config.js
-import reactX from "eslint-plugin-react-x";
-import reactDom from "eslint-plugin-react-dom";
+## Responsibilities
 
-export default defineConfig([
-  globalIgnores(["dist"]),
-  {
-    files: ["**/*.{ts,tsx}"],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs["recommended-typescript"],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-]);
-```
+- Page / feature composition
+- React state and UI interaction
+- Form rendering and client-side validation wiring
+- Chart rendering
+- WASM adapter invocation
+- Export UI
+
+以下は `apps/web` に直接置かない。
+
+- diffusion equation implementation
+- finite-difference / solver logic
+- core utilization calculation
+- reusable unit conversion logic
+
+それらは `packages/diffusion-core` または `packages/shared` に置く。
+
+## Vite Plus
+
+`apps/web/package.json` の `dev` / `build` / `preview` / `prepare` は `vp` を呼ぶ。
+`vp` は project dependency として `pnpm install` で入るため、グローバルインストールは不要。

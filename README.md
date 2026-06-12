@@ -17,16 +17,55 @@ Li-Mg Alloy Diffusion Simulator は、Li-rich Li-Mg 合金負極中の 1D 化学
 
 ## 使い方
 
-Nix flakes を使う場合は、開発シェルに入ってから依存関係をインストールします。
+### Nix flakes を使う場合
+
+開発シェルに入ってから依存関係をインストールします。
+Nix shell は Node.js、pnpm、Rust toolchain、`wasm32-unknown-unknown` target、wasm-pack を提供します。
+Vite Plus (`vp`) は `pnpm install` で入る project dependency を使います。
 
 ```bash
 nix develop
 pnpm install
+pnpm exec vp --help
 pnpm wasm:build
 pnpm dev
 ```
 
-Nix を使わない場合は、ローカルに Node.js、pnpm、Rust toolchain、wasm-pack を用意してください。
+Nix shell 内でビルドまで確認する場合:
+
+```bash
+nix develop --command bash -lc "pnpm install && pnpm exec vp --help && pnpm wasm:build && pnpm --filter web build"
+```
+
+### Nix を使わない場合
+
+ローカルに以下を用意してください。
+
+- Node.js 24 系
+- pnpm 11 系
+- Rust toolchain (`cargo`, `rustc`, `rustfmt`, `clippy`)
+- wasm-pack
+
+Vite Plus (`vp`) はプロジェクト依存として入るため、通常はグローバルインストール不要です。
+`pnpm install` 後に `pnpm dev` / `pnpm build` からローカルの `vp` が呼ばれます。
+
+macOS で Homebrew と rustup を使う例:
+
+```bash
+brew install node@24 pnpm wasm-pack
+rustup toolchain install stable
+rustup default stable
+rustup component add rustfmt clippy
+```
+
+Node.js と pnpm は、以下で利用可能か確認します。
+
+```bash
+node --version
+pnpm --version
+cargo --version
+wasm-pack --version
+```
 
 依存関係をインストールします。
 
@@ -39,6 +78,10 @@ Rust/WASM 数値コアをビルドします。
 ```bash
 pnpm wasm:build
 ```
+
+`pnpm wasm:build` は `wasm-pack build --release` を使います。
+Rust release profile は WASM 配布サイズを優先し、`opt-level = "z"`、LTO、single codegen unit、`panic = "abort"`、strip を有効にしています。
+`wasm-opt` は `-Oz` に加えて、Rust が生成する命令に合わせて `--enable-bulk-memory` と `--enable-nontrapping-float-to-int` を有効にしています。
 
 Web アプリを起動します。
 

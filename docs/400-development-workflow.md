@@ -11,6 +11,16 @@ Status: Accepted
 Nix flakes は任意の開発シェル入口として提供する。
 Nix を使う場合も、依存関係のインストールとプロジェクト操作は pnpm scripts を正とする。
 
+Nix を使わない場合は、開発者のローカル環境に以下を用意する。
+
+- Node.js 24 系
+- pnpm 11 系
+- Rust toolchain (`cargo`, `rustc`, `rustfmt`, `clippy`)
+- wasm-pack
+
+Vite Plus (`vp`) は project dependency として管理する。
+グローバル `vp` のインストールを前提にせず、`pnpm install` 後に pnpm scripts から呼び出す。
+
 Bootstrap procedure is finalized in `.steering/0002-project-bootstrap.md` during implementation, because exact `vp` command options may depend on the installed Vite Plus version.
 
 ---
@@ -19,11 +29,61 @@ Bootstrap procedure is finalized in `.steering/0002-project-bootstrap.md` during
 
 Status: Accepted
 
-| Area            | Choice                       | Rationale                                    |
-| --------------- | ---------------------------- | -------------------------------------------- |
-| Chart library   | Recharts                     | Lightweight React integration                |
-| WASM build      | wasm-pack + vite-plugin-wasm | Standard Rust WASM toolchain                 |
-| Form validation | Zod                          | Schema-first validation in `packages/shared` |
+| Area            | Choice                       | Rationale                                       |
+| --------------- | ---------------------------- | ----------------------------------------------- |
+| Web app runner  | Vite Plus (`vp`)             | Unified app dev/build entrypoint for `apps/web` |
+| Bundler family  | Vite 8 / Rolldown / OXC      | Vite+ compatible current toolchain              |
+| React plugin    | @vitejs/plugin-react         | Vite 8 compatible React transform               |
+| Chart library   | Recharts                     | Lightweight React integration                   |
+| WASM build      | wasm-pack + vite-plugin-wasm | Standard Rust WASM toolchain                    |
+| Form validation | Zod                          | Schema-first validation in `packages/shared`    |
+
+---
+
+## Root and App Roles
+
+Status: Accepted
+
+The root package is not the web app.
+It owns workspace orchestration, repository-level scripts, cross-package Vitest config, and shared tooling dependencies.
+
+`apps/web` is the Vite Plus application.
+Its app lifecycle commands are:
+
+```bash
+pnpm --filter web dev
+pnpm --filter web build
+pnpm --filter web preview
+```
+
+The root convenience command:
+
+```bash
+pnpm dev
+```
+
+delegates to:
+
+```bash
+pnpm --filter web dev
+```
+
+---
+
+## Vite Plus, Rolldown, OXC, and esbuild
+
+Status: Accepted
+
+Vite Plus / Vite 8 is treated as a Rolldown + OXC based toolchain.
+Prefer current Vite 8 names when adding configuration:
+
+- use `build.rolldownOptions` instead of `build.rollupOptions`
+- use `optimizeDeps.rolldownOptions` instead of `optimizeDeps.rollupOptions`
+- use `oxc` instead of deprecated `esbuild` transform options when possible
+
+`esbuild` is still an explicit root devDependency because `vite-plugin-top-level-await` requires it at runtime.
+It is not the intended primary bundler for this app.
+`esbuild@^0.27.1` is used because it satisfies Vite 8 peer requirements and keeps the current `vite-plugin-top-level-await` build path working.
 
 ---
 
@@ -50,6 +110,39 @@ Nix development shell:
 ```bash
 nix develop
 pnpm install
+pnpm exec vp --help
+pnpm wasm:build
+pnpm dev
+```
+
+Nix shell verification command:
+
+```bash
+nix develop --command bash -lc "pnpm install && pnpm exec vp --help && pnpm wasm:build && pnpm --filter web build"
+```
+
+WASM release build:
+
+```bash
+pnpm wasm:build
+```
+
+`pnpm wasm:build` は `wasm-pack build --release` を呼ぶ。
+`packages/diffusion-core/Cargo.toml` の release profile は WASM 配布サイズを優先し、`opt-level = "z"`、LTO、single codegen unit、`panic = "abort"`、strip を有効にする。
+`wasm-pack` の release profile metadata では `wasm-opt = ["-Oz", "--enable-bulk-memory", "--enable-nontrapping-float-to-int"]` を使う。
+
+Non-Nix local setup example for macOS:
+
+```bash
+brew install node@24 pnpm wasm-pack
+rustup toolchain install stable
+rustup default stable
+rustup component add rustfmt clippy
+node --version
+pnpm --version
+cargo --version
+wasm-pack --version
+pnpm install
 pnpm wasm:build
 pnpm dev
 ```
@@ -58,11 +151,16 @@ Canonical package scripts:
 
 ```bash
 pnpm fmt
+pnpm fmt:check
 pnpm lint
 pnpm test
 pnpm test:coverage
 pnpm check
 ```
+
+`pnpm fmt` applies formatting.
+`pnpm fmt:check` verifies formatting without writing changes.
+`pnpm check` is the non-mutating aggregate gate and intentionally uses `fmt:check`.
 
 Rust commands:
 

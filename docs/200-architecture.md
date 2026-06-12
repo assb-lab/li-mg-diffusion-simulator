@@ -19,7 +19,8 @@ Browser
 ## Monorepo Layout
 
 ```text
-apps/web                 React app
+root                     pnpm workspace orchestration, cross-package tests
+apps/web                 Vite Plus React app
 packages/shared          TypeScript shared types/constants/unit utilities
 packages/ui              reusable UI components
 packages/diffusion-core  Rust solver + WASM bindings
@@ -28,6 +29,17 @@ packages/diffusion-core  Rust solver + WASM bindings
 ---
 
 ## Responsibilities
+
+### root
+
+- pnpm workspace orchestration
+- repository-level quality gate scripts
+- Vitest configuration for cross-package tests
+- shared tooling dependencies needed by tests and package scripts
+- Nix flake entrypoint
+
+Root is not the user-facing Vite application.
+The runnable web app is `apps/web`.
 
 ### apps/web
 
@@ -50,6 +62,7 @@ packages/diffusion-core  Rust solver + WASM bindings
 
 - reusable design system primitives
 - no Li-Mg domain knowledge
+- keep this package small until components are genuinely shared
 
 ### packages/diffusion-core
 

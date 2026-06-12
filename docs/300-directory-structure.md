@@ -58,8 +58,11 @@ Status: Accepted
 │   └── fixtures/
 ├── scripts/
 ├── flake.nix
+├── flake.lock
 ├── package.json
 ├── pnpm-workspace.yaml
+├── vite.config.ts
+├── vitest.config.ts
 └── tsconfig.base.json
 ```
 
@@ -78,7 +81,23 @@ Status: Accepted
 
 ### apps/web
 
-Web app本体。
+Vite Plus React Web app本体。
+`vp dev` / `vp build` はこの package の scripts から実行する。
+
+### root package.json
+
+Status: Accepted
+
+pnpm workspace の統括、横断テスト、品質ゲート、共有 tooling の入口。
+root は user-facing app ではない。
+root の `vite` / `@vitejs/plugin-react` / `vitest` は root-level Vitest と plugin 解決のために置く。
+
+### root vite.config.ts
+
+Status: Accepted
+
+Vite Plus git hook 用の root config。
+`core.hooksPath` が `apps/web/.vite-hooks/_` を指していても、commit は root から実行されるため root の `staged` config を正とする。
 
 ### packages/diffusion-core
 
@@ -91,6 +110,7 @@ TypeScript shared domain package。
 ### packages/ui
 
 Reusable UI components。
+現時点では小さく保ち、複数 feature / package で再利用する UI primitive だけを置く。
 
 ### tests
 
@@ -106,6 +126,13 @@ Status: Accepted
 
 任意の Nix flakes 開発シェル定義。
 Node.js、pnpm、Rust toolchain、wasm-pack を揃えるための補助入口であり、プロジェクトの package manager は引き続き pnpm とする。
+
+### flake.lock
+
+Status: Accepted
+
+Nix flake inputs の lock file。
+再現可能な `nix develop` のために commit 対象とする。
 
 ---
 
