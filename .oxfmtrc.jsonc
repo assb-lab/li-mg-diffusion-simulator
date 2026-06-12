@@ -1,0 +1,9 @@
+{
+  "ignorePatterns": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/pkg/**",
+    "**/pnpm-lock.yaml",
+    "**/coverage/**",
+  ],
+}

@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+*/node_modules/
+
+# Build outputs
+dist/
+*/dist/
+coverage/
+*.tsbuildinfo
+
+# Rust / WASM outputs
+target/
+*/target/
+packages/diffusion-core/pkg/
+
+# Local environment
+.env
+.env.*
+!.env.example
+.direnv/
+
+# Logs and caches
+*.log
+.DS_Store
+.vite/
+.vitest/
+
