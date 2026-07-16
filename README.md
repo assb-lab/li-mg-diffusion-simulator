@@ -20,7 +20,7 @@ Li-Mg Alloy Diffusion Simulator は、Li-rich Li-Mg 合金負極中の 1D 化学
 ### Nix flakes を使う場合
 
 開発シェルに入ってから依存関係をインストールします。
-Nix shell は Node.js、pnpm、Rust toolchain、`wasm32-unknown-unknown` target、wasm-pack を提供します。
+Nix shell は Node.js、pnpm、Rust toolchain、`wasm32-unknown-unknown` target、wasm-pack、任意の単体バイナリ配布用 Go を提供します。
 Vite Plus (`vp`) は `pnpm install` で入る project dependency を使います。
 
 ```bash
@@ -111,6 +111,32 @@ cargo fmt --check --manifest-path packages/diffusion-core/Cargo.toml
 cargo clippy --manifest-path packages/diffusion-core/Cargo.toml -- -D warnings
 ```
 
+## 単体バイナリ配布
+
+本番ビルドした静的アセット（WASM 含む）を Go 実行ファイルへ埋め込み、ローカル HTTP で配信できます。計算自体はブラウザ内 WASM のままです。Go toolchain が必要です。
+
+```bash
+# Apple Silicon
+pnpm binary:build:apple-silicon
+./bin/li-mg-diffusion-simulator-apple-silicon
+
+# Windows x86_64（macOS/Linux からのクロスコンパイル可）
+pnpm binary:build:windows-x64
+```
+
+同等の直接スクリプト:
+
+```bash
+./scripts/build-binary-apple-silicon.sh
+./scripts/build-binary-windows-x64.sh
+```
+
+デフォルトは `http://127.0.0.1:4173/` です。
+
+```bash
+./bin/li-mg-diffusion-simulator-apple-silicon --port 4183
+```
+
 ## 技術スタック
 
 - Frontend: Vite React TypeScript
@@ -121,13 +147,16 @@ cargo clippy --manifest-path packages/diffusion-core/Cargo.toml -- -D warnings
 - Formatter: oxfmt
 - Linter: oxlint
 - Calculation core: Rust + wasm-bindgen + WASM
+- Optional local packaging: Go `embed` static file server
 
 ## ディレクトリ
 
 ```text
-apps/web/                 React UI
+apps/web/                 React UI + optional Go static server
 packages/shared/          TypeScript domain types, units, validation
 packages/diffusion-core/  Rust solver + WASM package
+scripts/                  Binary packaging scripts
+bin/                      Packaged executables (gitignored)
 tests/                    Integration and acceptance tests
 docs/                     SSOT specifications
 .steering/                Iteration records

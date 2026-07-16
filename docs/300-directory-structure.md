@@ -37,6 +37,9 @@ Status: Accepted
 │       ├── index.html
 │       ├── vite.config.ts
 │       ├── vitest.config.ts
+│       ├── main.go
+│       ├── go.mod
+│       ├── staticserver/
 │       └── src/
 ├── packages/
 │   ├── diffusion-core/
@@ -57,6 +60,9 @@ Status: Accepted
 │   ├── integration/
 │   └── fixtures/
 ├── scripts/
+│   ├── build-binary-apple-silicon.sh
+│   └── build-binary-windows-x64.sh
+├── bin/                      # binary build output (gitignored)
 ├── flake.nix
 ├── flake.lock
 ├── package.json
@@ -83,6 +89,21 @@ Status: Accepted
 
 Vite Plus React Web app本体。
 `vp dev` / `vp build` はこの package の scripts から実行する。
+
+`main.go` / `go.mod` / `staticserver/` は任意の単体バイナリ配布用ローカル静的サーバである。
+数値計算ロジックはここへ置かない。`dist/` を `embed` して配信するだけとする。
+
+### scripts
+
+Project automation scripts。
+単体バイナリ向けには次の 2 系統を正とする。
+
+- `build-binary-apple-silicon.sh` → `darwin/arm64`
+- `build-binary-windows-x64.sh` → `windows/amd64`
+
+### bin
+
+単体バイナリの出力先。gitignore 対象。
 
 ### root package.json
 
@@ -116,16 +137,12 @@ Reusable UI components。
 
 Cross-package tests and fixtures。
 
-### scripts
-
-Project automation scripts。
-
 ### flake.nix
 
 Status: Accepted
 
 任意の Nix flakes 開発シェル定義。
-Node.js、pnpm、Rust toolchain、wasm-pack を揃えるための補助入口であり、プロジェクトの package manager は引き続き pnpm とする。
+Node.js、pnpm、Rust toolchain、wasm-pack、任意の単体バイナリ配布用 Go を揃えるための補助入口であり、プロジェクトの package manager は引き続き pnpm とする。
 
 ### flake.lock
 

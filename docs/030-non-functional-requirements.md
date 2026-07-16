@@ -40,8 +40,9 @@ Implementation guidance:
 ## NFR-04 Portability
 
 - Static web appとしてdeploy可能にする
-- Server dependencyなし
+- 計算のための remote server dependency なし
 - Browser local execution
+- 任意で Go 単体バイナリによるローカル静的配信を提供する（計算は引き続きブラウザ内 WASM）
 
 ---
 

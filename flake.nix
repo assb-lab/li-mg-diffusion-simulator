@@ -37,6 +37,7 @@
           default = pkgs.mkShell {
             packages = with pkgs; [
               git
+              go
               nodejs_24
               openssl
               pkg-config
@@ -49,6 +50,7 @@
               export COREPACK_ENABLE_DOWNLOAD_PROMPT=0
               echo "Li-Mg Alloy Diffusion Simulator dev shell"
               echo "Run: pnpm install && pnpm exec vp --help && pnpm wasm:build && pnpm dev"
+              echo "Optional binary: pnpm binary:build:apple-silicon"
             '';
           };
         }

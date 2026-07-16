@@ -127,9 +127,35 @@ No Rust panic should leak directly into UI.
 
 ## Deployment
 
+Status: Accepted
+
 MVP should be deployable as a static site.
 
-No backend server is required.
+No remote backend server is required for calculation.
+The browser loads the React UI and the Rust WASM core, then runs simulation locally.
+
+### Optional single-binary local serve
+
+Status: Accepted
+
+For offline / USB 配布向けに、本番ビルドした静的アセット（WASM 含む）を Go の `embed` で単体実行ファイルへ埋め込み、ローカル HTTP で配信できる。
+
+```text
+pnpm wasm:build
+pnpm --filter web build
+  └─ apps/web/dist/   (HTML/JS/CSS/WASM)
+go build (apps/web/main.go)
+  └─ bin/*.exe or bin/*   embeds dist/, serves via net/http
+```
+
+- Calculation remains in-browser WASM. The Go binary is a static file server only.
+- Default listen address: `127.0.0.1:4173`
+- React Router 向けに、実ファイルが無いパスは `index.html` へフォールバックする。
+- Supported packaging targets for scripts:
+  - Apple Silicon: `darwin/arm64`
+  - Windows x86_64: `windows/amd64`
+
+Reference pattern: [ks250206/afm_process](https://github.com/ks250206/afm_process) Go embed serve.
 
 ---
 

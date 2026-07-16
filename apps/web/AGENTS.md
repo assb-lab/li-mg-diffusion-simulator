@@ -12,6 +12,7 @@
 - WASM core 呼び出し
 - CSV / JSON / PNG export UI
 - アプリケーション状態管理
+- （任意）Go `embed` による単体バイナリ静的配信
 
 ---
 
@@ -31,6 +32,7 @@
 - diffusion equation を TypeScript UI 側に再実装しない
 - 論文値を component に直書きしない
 - chart library に依存した値変換を domain logic と混ぜない
+- Go バイナリ側に拡散計算を置かない（静的配信のみ）
 
 ---
 
@@ -41,20 +43,26 @@
 3. 結果表示の単位・ラベル
 4. Export payload
 5. エラー表示
+6. `staticserver` の SPA fallback / asset serving（`go test ./staticserver`）
 
 ---
 
 ## Recommended Structure
 
 ```text
-apps/web/src/
-├── app/
-├── features/
-│   ├── simulation-input/
-│   ├── concentration-profile/
-│   ├── utilization-sweep/
-│   └── export-result/
-├── routes/
-├── wasm/
-└── main.tsx
+apps/web/
+├── main.go              # optional embed static server
+├── go.mod
+├── staticserver/        # pure HTTP handler (no domain logic)
+├── dist/                # vite build output, embedded by main.go
+└── src/
+    ├── app/
+    ├── features/
+    │   ├── simulation-input/
+    │   ├── concentration-profile/
+    │   ├── utilization-sweep/
+    │   └── export-result/
+    ├── routes/
+    ├── wasm/
+    └── main.tsx
 ```

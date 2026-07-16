@@ -13,7 +13,10 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "check": "pnpm fmt:check && pnpm lint && pnpm test:coverage",
-    "wasm:build": "wasm-pack build packages/diffusion-core --release --target bundler --out-dir pkg"
+    "wasm:build": "wasm-pack build packages/diffusion-core --release --target bundler --out-dir pkg",
+    "binary:build:apple-silicon": "./scripts/build-binary-apple-silicon.sh",
+    "binary:build:windows-x64": "./scripts/build-binary-windows-x64.sh",
+    "binary:test": "cd apps/web && go test ./staticserver/"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.9.1",
