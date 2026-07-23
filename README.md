@@ -181,4 +181,4 @@ pnpm check
 
 ## License
 
-MIT ks250206 2026. See [`LICENSE`](LICENSE).
+MIT assb-lab 2026. See [`LICENSE`](LICENSE).
