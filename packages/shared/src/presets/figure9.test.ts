@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
 import { buildFigure9SimulationParams, FIGURE9_CASES, FIGURE9_PRESET } from "./figure9";
 
 describe("Figure 9 preset", () => {

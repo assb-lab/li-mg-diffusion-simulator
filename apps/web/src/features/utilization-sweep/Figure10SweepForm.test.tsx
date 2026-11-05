@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vite-plus/test";
 import { Figure10SweepForm } from "./Figure10SweepForm";
 import { DEFAULT_FIGURE10_FORM_STATE } from "./figure10SweepFormViewModel";
 

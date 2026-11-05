@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
 import { UI_PACKAGE_NAME } from "./index";
 
 describe("ui package", () => {

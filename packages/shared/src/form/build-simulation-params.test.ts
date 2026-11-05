@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
 import { buildSimulationParamsFromBase } from "./build-simulation-params";
 import { DEFAULT_BASE_FORM_STATE } from "./simulation-base";
 

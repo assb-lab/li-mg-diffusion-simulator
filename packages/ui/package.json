@@ -9,11 +9,10 @@
     ".": "./src/index.ts"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json --noEmit"
+    "build": "vp check --no-fmt --no-lint"
   },
   "devDependencies": {
-    "@types/react": "^19.2.14",
-    "typescript": "~6.0.2"
+    "@types/react": "^19.3.0"
   },
   "peerDependencies": {
     "react": "^19.0.0"

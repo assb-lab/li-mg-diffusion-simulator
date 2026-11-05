@@ -1,5 +1,5 @@
 import { DEFAULT_BASE_FORM_STATE } from "@li-mg/shared";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vite-plus/test";
 import { runFigure9WithBase } from "./figure9Runner";
 
 vi.mock("@li-mg/shared/wasm/adapter", () => ({

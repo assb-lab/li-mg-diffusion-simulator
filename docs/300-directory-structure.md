@@ -36,7 +36,6 @@ Status: Accepted
 │       ├── package.json
 │       ├── index.html
 │       ├── vite.config.ts
-│       ├── vitest.config.ts
 │       ├── main.go
 │       ├── go.mod
 │       ├── staticserver/
@@ -68,7 +67,9 @@ Status: Accepted
 ├── package.json
 ├── pnpm-workspace.yaml
 ├── vite.config.ts
-├── vitest.config.ts
+├── tsconfig.json              # workspace/test type checking
+├── .node-version
+├── .vite-hooks/pre-commit
 └── tsconfig.base.json
 ```
 
@@ -111,14 +112,14 @@ Status: Accepted
 
 pnpm workspace の統括、横断テスト、品質ゲート、共有 tooling の入口。
 root は user-facing app ではない。
-root の `vite` / `@vitejs/plugin-react` / `vitest` は root-level Vitest と plugin 解決のために置く。
+Vite Plus が bundled Vite / Vitest / Oxlint / Oxfmt を管理する。plugin の peer 解決に必要な `vite` / `vitest` alias は bundled package を指す。
 
 ### root vite.config.ts
 
 Status: Accepted
 
-Vite Plus git hook 用の root config。
-`core.hooksPath` が `apps/web/.vite-hooks/_` を指していても、commit は root から実行されるため root の `staged` config を正とする。
+Vite Plus の test / coverage / lint / fmt / staged を集約する root config。
+git hook は root の `.vite-hooks/` で管理し、root の `staged` config を正とする。
 
 ### packages/diffusion-core
 

@@ -1,5 +1,5 @@
 import { MODEL_VERSION } from "@li-mg/shared";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
 
 describe("workspace import", () => {
   it("imports @li-mg/shared from the monorepo", () => {

@@ -27,6 +27,18 @@ wasm-pack test --node
 
 ---
 
+## Unified Static Checks
+
+Status: Implemented
+
+`pnpm check` runs `vp check` (Oxfmt, Oxlint, type-aware lint and type checking)
+and `vp test run --coverage`. Root `vite.config.ts` is the shared configuration.
+`pnpm build` must pass the static checks before the web production build.
+Frozen installation with pinned pnpm 12 must succeed. Toolchain migrations also
+require a fresh WASM build and a real-browser smoke check of the production app.
+
+---
+
 ## Coverage Gate
 
 Target:

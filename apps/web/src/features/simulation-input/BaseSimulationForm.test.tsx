@@ -1,5 +1,5 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vite-plus/test";
 import { DEFAULT_BASE_FORM_STATE } from "@li-mg/shared";
 import { BaseSimulationForm } from "./BaseSimulationForm";
 

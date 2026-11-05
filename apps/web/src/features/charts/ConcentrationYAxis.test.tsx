@@ -1,7 +1,7 @@
 import { buildConcentrationAxisFromInitial, majorConcentrationTicks } from "@li-mg/shared";
 import { render, screen } from "@testing-library/react";
 import { Line, LineChart, ResponsiveContainer } from "recharts";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
 import { ConcentrationYAxis } from "./ConcentrationYAxis";
 
 describe("ConcentrationYAxis", () => {
@@ -29,7 +29,7 @@ describe("ConcentrationYAxis", () => {
     );
 
     for (const tick of majorTicks) {
-      expect(screen.getByText(String(tick))).toBeInTheDocument();
+      expect(screen.getByText(String(tick), { selector: "svg tspan" })).toBeInTheDocument();
     }
   });
 });

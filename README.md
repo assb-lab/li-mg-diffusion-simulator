@@ -41,8 +41,8 @@ nix develop --command bash -lc "pnpm install && pnpm exec vp --help && pnpm wasm
 
 ローカルに以下を用意してください。
 
-- Node.js 24 系
-- pnpm 11 系
+- Node.js 26 系（`.node-version` に固定）
+- pnpm 12.16.1
 - Rust toolchain (`cargo`, `rustc`, `rustfmt`, `clippy`)
 - wasm-pack
 
@@ -52,7 +52,8 @@ Vite Plus (`vp`) はプロジェクト依存として入るため、通常はグ
 macOS で Homebrew と rustup を使う例:
 
 ```bash
-brew install node@24 pnpm wasm-pack
+brew install node@26 wasm-pack
+npm install -g pnpm@12.16.1
 rustup toolchain install stable
 rustup default stable
 rustup component add rustfmt clippy
@@ -140,12 +141,12 @@ pnpm binary:build:windows-x64
 ## 技術スタック
 
 - Frontend: Vite React TypeScript
-- Environment bootstrap: Vite Plus (`vp`)
+- Toolchain: Vite Plus 1.5.0 (`vp`: dev/build/test/lint/format/typecheck)
 - Package manager: pnpm
 - Optional development environment: Nix flakes
-- Test runner: Vitest
-- Formatter: oxfmt
-- Linter: oxlint
+- Test runner: Vite Plus bundled Vitest
+- Formatter: Vite Plus bundled Oxfmt
+- Linter/type checker: Vite Plus bundled Oxlint / tsgolint
 - Calculation core: Rust + wasm-bindgen + WASM
 - Optional local packaging: Go `embed` static file server
 

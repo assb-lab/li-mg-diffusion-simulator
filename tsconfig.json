@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["node", "vite-plus/test/globals", "@testing-library/jest-dom"]
+  },
+  "include": [
+    "vite.config.ts",
+    "tests/**/*.ts",
+    "apps/web/src/**/*",
+    "apps/web/vite.config.ts",
+    "packages/shared/src/**/*",
+    "packages/ui/src/**/*"
+  ]
+}

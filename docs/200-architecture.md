@@ -34,7 +34,7 @@ packages/diffusion-core  Rust solver + WASM bindings
 
 - pnpm workspace orchestration
 - repository-level quality gate scripts
-- Vitest configuration for cross-package tests
+- unified Vite Plus configuration for cross-package tests, coverage, lint and format
 - shared tooling dependencies needed by tests and package scripts
 - Nix flake entrypoint
 

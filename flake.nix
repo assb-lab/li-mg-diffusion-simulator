@@ -38,10 +38,10 @@
             packages = with pkgs; [
               git
               go
-              nodejs_24
+              nodejs_26
               openssl
               pkg-config
-              pnpm
+              pnpm_12
               rustToolchain
               wasm-pack
             ];
