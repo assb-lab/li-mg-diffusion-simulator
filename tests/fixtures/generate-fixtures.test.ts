@@ -2,7 +2,7 @@ import { buildFigure9SimulationParams } from "@li-mg/shared";
 import { initDiffusionWasm, simulateDiffusion } from "@li-mg/shared/wasm/adapter";
 import { writeFileSync, mkdirSync } from "node:fs";
 import path from "node:path";
-import { beforeAll, describe, it } from "vitest";
+import { beforeAll, describe, it } from "vite-plus/test";
 
 beforeAll(async () => {
   await initDiffusionWasm(async () => {

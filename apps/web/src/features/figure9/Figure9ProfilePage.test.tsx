@@ -1,5 +1,5 @@
 import { render, screen, waitFor } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vite-plus/test";
 import { Figure9ProfilePage } from "./Figure9ProfilePage";
 
 vi.mock("../../wasm/init", () => ({
@@ -32,7 +32,7 @@ const runFigure9WithBase = vi.fn(() => ({
 }));
 
 vi.mock("./figure9Runner", () => ({
-  runFigure9WithBase: (...args: unknown[]) => runFigure9WithBase(...args),
+  runFigure9WithBase: () => runFigure9WithBase(),
 }));
 
 describe("Figure9ProfilePage", () => {

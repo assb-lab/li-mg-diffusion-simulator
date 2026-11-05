@@ -1,6 +1,7 @@
+// @vitest-environment node
 import { FIGURE9_CASES, buildFigure9SimulationParams } from "@li-mg/shared";
 import { initDiffusionWasm, simulateDiffusion } from "@li-mg/shared/wasm/adapter";
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vite-plus/test";
 
 beforeAll(async () => {
   await initDiffusionWasm(async () => {

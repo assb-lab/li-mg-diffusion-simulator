@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it } from "vite-plus/test";
 import { calculateDiffusionCoeffArrhenius, DEFAULT_ARRHENIUS_INPUT } from "./arrhenius";
 import { celsiusToKelvin } from "../units/units";
 

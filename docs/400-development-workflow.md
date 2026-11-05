@@ -13,8 +13,8 @@ Nix を使う場合も、依存関係のインストールとプロジェクト�
 
 Nix を使わない場合は、開発者のローカル環境に以下を用意する。
 
-- Node.js 24 系
-- pnpm 11 系
+- Node.js 26 系
+- pnpm 12 系
 - Rust toolchain (`cargo`, `rustc`, `rustfmt`, `clippy`)
 - wasm-pack
 - （任意）Go 1.22+ — 単体バイナリ配布時のみ
@@ -22,7 +22,8 @@ Nix を使わない場合は、開発者のローカル環境に以下を用意�
 Vite Plus (`vp`) は project dependency として管理する。
 グローバル `vp` のインストールを前提にせず、`pnpm install` 後に pnpm scripts から呼び出す。
 
-Bootstrap procedure is finalized in `.steering/0002-project-bootstrap.md` during implementation, because exact `vp` command options may depend on the installed Vite Plus version.
+The bootstrap commands below are canonical. Historical bootstrap decisions are
+recorded in `.steering/0002-project-bootstrap.md`.
 
 ---
 
@@ -47,7 +48,7 @@ Status: Accepted
 Status: Accepted
 
 The root package is not the web app.
-It owns workspace orchestration, repository-level scripts, cross-package Vitest config, and shared tooling dependencies.
+It owns workspace orchestration, repository-level scripts, unified Vite Plus config, and shared tooling dependencies.
 
 `apps/web` is the Vite Plus application.
 Its app lifecycle commands are:
@@ -64,29 +65,69 @@ The root convenience command:
 pnpm dev
 ```
 
-delegates to:
+delegates directly to Vite Plus:
 
 ```bash
-pnpm --filter web dev
+vp dev apps/web
 ```
 
 ---
 
-## Vite Plus, Rolldown, OXC, and esbuild
+## Unified Vite Plus Toolchain
 
-Status: Accepted
+Status: Implemented
 
-Vite Plus / Vite 8 is treated as a Rolldown + OXC based toolchain.
-Prefer current Vite 8 names when adding configuration:
+Node.js is pinned to 26.13.0 in `.node-version` and constrained to major 26 in
+`package.json`. pnpm is pinned to 12.16.1 in root `packageManager`; workspace
+packages inherit it. Vite Plus is pinned to 1.5.0, the registry stable release
+verified on 2026-11-05. Bundled tool versions are owned by Vite Plus, not updated
+individually. Use `pnpm exec vp toolchain` to inspect the effective versions.
 
-- use `build.rolldownOptions` instead of `build.rollupOptions`
-- use `optimizeDeps.rolldownOptions` instead of `optimizeDeps.rollupOptions`
-- use `oxc` instead of deprecated `esbuild` transform options when possible
+Root `vite.config.ts` owns test, coverage, lint, format, and staged-file settings.
+`apps/web/vite.config.ts` owns only application build/dev settings. Remove separate
+Vitest, ESLint, Oxlint, and Oxfmt config files. Tests import `vite-plus/test`;
+Vite/Vitest aliases required by third-party plugins must resolve to the Vite Plus
+bundled packages. Avoid independent runner/formatter/linter dependencies. The optional
+`@vitest/coverage-v8` provider and `vitest` peer dependency for jest-dom are pinned
+to the bundled Vitest version via the workspace catalog. TypeScript 7.0.2 remains
+an editor dependency at the root; builds use the Vite Plus type checker, without a
+separate `tsc` invocation. React 19.3.1, React plugin 6.2.1, jsdom 30.1.3,
+Testing Library React 16.3.3 and jest-dom 7.0.1 are the verified stable releases
+for this migration. React Router and Recharts remain on their current major lines.
+WASM acceptance/integration suites run in the Node environment;
+component tests retain jsdom. Vitest 5 matcher types are augmented in
+`apps/web/src/vitest.d.ts` until jest-dom adopts the new `Matchers<R, T>` API.
 
-`esbuild` is still an explicit root devDependency because `vite-plugin-top-level-await` requires it at runtime.
-It is not the intended primary bundler for this app.
-`esbuild@^0.27.1` is used because it satisfies Vite 8 peer requirements and keeps the current `vite-plugin-top-level-await` build path working.
-`esbuild@0.28.x` fails production builds with a destructuring transform error under the default browser targets, so `pnpm-workspace.yaml` `overrides.esbuild` pins `^0.27.1` for every workspace package, including `apps/web`.
+`vp check` runs Oxfmt, Oxlint, type-aware rules and TypeScript type checking
+(`lint.options.typeAware` and `typeCheck`). All workspace sources and root tests
+must belong to TypeScript projects. Keep the existing pnpm command entrypoints,
+but delegate to Vite Plus. `pnpm check` combines non-mutating static checks with
+coverage tests; production build runs the static checks before the app build.
+Root staged checks use `vp check --fix`; install the hook from the root package.
+`prepare` runs `vp config --hooks --hooks-dir .vite-hooks --no-agent`. For clones
+with the previous app-local hook, set the new dispatcher path with
+`git config --local core.hooksPath .vite-hooks/_`, then run
+`pnpm exec vp hooks enable --hooks-dir .vite-hooks`. Vite Plus preserves an
+existing hook path instead of overwriting it automatically.
+
+Rust/WASM compilation remains `wasm-pack`, and optional Go packaging remains Go.
+Native top-level await is supported by the bundled Vite browser targets.
+`vite-plugin-top-level-await`, its explicit esbuild dependency and compatibility
+override have been removed after validating the upgraded build.
+`vite-plugin-wasm` provides WASM ESM integration.
+Do not raise browser targets just to make migration pass.
+
+Vitest 5 migration must preserve all tests, acceptance criteria, and the 80% line
+and statement coverage gates. Review generated compatibility settings with actual
+test runs; keep only settings needed for existing behavior. Do not weaken coverage
+or add skips to resolve migration failures.
+
+References:
+
+- [Vite Plus migration](https://www.viteplus.dev/guide/migrate)
+- [Vite Plus configuration](https://www.viteplus.dev/config/)
+- [Vite Plus check](https://www.viteplus.dev/guide/check)
+- [pnpm 12 release](https://pnpm.io/blog/releases/12.0)
 
 ---
 
@@ -137,7 +178,8 @@ pnpm wasm:build
 Non-Nix local setup example for macOS:
 
 ```bash
-brew install node@24 pnpm wasm-pack
+brew install node@26 wasm-pack
+npm install -g pnpm@12.16.1
 rustup toolchain install stable
 rustup default stable
 rustup component add rustfmt clippy
@@ -163,7 +205,7 @@ pnpm check
 
 `pnpm fmt` applies formatting.
 `pnpm fmt:check` verifies formatting without writing changes.
-`pnpm check` is the non-mutating aggregate gate and intentionally uses `fmt:check`.
+`pnpm check` is the non-mutating aggregate gate: `vp check` plus coverage tests.
 
 ### Optional single-binary packaging
 
@@ -207,25 +249,29 @@ cargo test
 
 ---
 
-## Suggested Root package.json Scripts
+## Canonical Root Scripts
+
+Status: Accepted
 
 ```json
 {
   "scripts": {
-    "dev": "pnpm --filter web dev",
-    "build": "pnpm -r build",
-    "fmt": "oxfmt --write .",
-    "fmt:check": "oxfmt --check .",
-    "lint": "oxlint .",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage",
-    "check": "pnpm fmt:check && pnpm lint && pnpm test:coverage"
+    "dev": "vp dev apps/web",
+    "build": "vp check && vp build apps/web",
+    "fmt": "vp fmt",
+    "fmt:check": "vp fmt --check",
+    "lint": "vp lint",
+    "test": "vp test run",
+    "test:watch": "vp test",
+    "test:coverage": "vp test run --coverage",
+    "check": "vp check && vp test run --coverage"
   }
 }
 ```
 
-If actual oxfmt CLI flags differ, update this document and package scripts together during project bootstrap.
+Nix uses Node.js 26.13.0 and pnpm_12 as the bootstrap package. The repository
+packageManager field selects pnpm 12.16.1 inside the shell. Keep flake inputs
+locked and validate the shell's Node/pnpm versions when updating them.
 
 ---
 

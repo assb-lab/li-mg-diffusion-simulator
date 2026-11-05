@@ -1,5 +1,5 @@
 import { buildFigure9SimulationParams } from "@li-mg/shared";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi } from "vite-plus/test";
 import { buildSimulationExport, downloadTextFile, exportJson, exportProfileCsv } from "./export";
 
 describe("export", () => {

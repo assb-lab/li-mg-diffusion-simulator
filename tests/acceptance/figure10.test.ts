@@ -1,3 +1,4 @@
+// @vitest-environment node
 import {
   ACTIVATION_ENERGY_EV,
   DEFAULT_ARRHENIUS_INPUT,
@@ -6,7 +7,7 @@ import {
   MODEL_VERSION,
 } from "@li-mg/shared";
 import { initDiffusionWasm, simulateUtilizationSweep } from "@li-mg/shared/wasm/adapter";
-import { beforeAll, describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vite-plus/test";
 
 beforeAll(async () => {
   await initDiffusionWasm(async () => {
