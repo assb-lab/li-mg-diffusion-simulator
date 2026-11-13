@@ -4,6 +4,8 @@ Li-Mg Alloy Diffusion Simulator は、Li-rich Li-Mg 合金負極中の 1D 化学
 
 本プロジェクトは、Krauskopf et al., _Advanced Energy Materials_ 2019, DOI: `10.1002/aenm.201902568` の Li0.9Mg0.1 合金負極モデル、特に Figure 9 / Figure 10 の再現検討にインスパイアされた研究・教育用シミュレータです。論文そのものの公式実装ではありません。
 
+[シミュレータを開く（GitHub Pages）](https://assb-lab.github.io/li-mg-diffusion-simulator/)
+
 ## 何ができるか
 
 - Li-Mg 合金負極内の濃度プロファイルを 1D 拡散モデルで計算する
