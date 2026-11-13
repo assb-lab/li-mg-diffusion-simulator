@@ -16,6 +16,17 @@ vi.mock("./features/utilization-sweep/Figure10Page", () => ({
 }));
 
 describe("App", () => {
+  it("uses reloadable hash routes for the Pages build", () => {
+    vi.stubEnv("BASE_URL", "/li-mg-diffusion-simulator/");
+    window.history.replaceState({}, "", "/li-mg-diffusion-simulator/#/simulation");
+    const { unmount } = render(<App />);
+    expect(screen.getByText("Single Simulation mock")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Figure 10/i })).toHaveAttribute("href", "#/figure10");
+    unmount();
+    vi.unstubAllEnvs();
+    window.history.replaceState({}, "", "/");
+  });
+
   it("renders the simulator title and navigation", () => {
     render(<App />);
     expect(

@@ -167,3 +167,13 @@ Reference pattern: [ks250206/afm_process](https://github.com/ks250206/afm_proces
 - FEM solver module
 - comparison against experimental CSV
 - fitting module for diffusion coefficient estimation
+
+### GitHub Pages
+
+Status: Accepted
+
+The public site is deployed from `main` by GitHub Actions to
+`https://assb-lab.github.io/li-mg-diffusion-simulator/`. The workflow builds the
+Rust WASM package and the web app with the repository path as Vite's base. The
+Pages build uses hash routing so that navigation and reloads work on static hosting;
+local development and binary distribution continue to use browser history routing.
